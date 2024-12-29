@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}تفاصيل الورشة{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md mt-8">
+    <h2 class="text-3xl font-bold mb-6 text-blue-600">تفاصيل الورشة</h2>
+
+    <div class="grid grid-cols-2 gap-4">
+        <div><strong>الموقع:</strong> {{ workshop['Location'] }}</div>
+        <div><strong>اسم الزبون:</strong> {{ workshop['CustomerName'] }}</div>
+        <div><strong>رقم الهاتف:</strong> {{ workshop['PhoneNumber'] }}</div>
+        <div><strong>النوع:</strong> {{ workshop['Type'] }}</div>
+        <div><strong>رقم العامل:</strong> {{ workshop['WorkerID'] }}</div>
+        <div><strong>تاريخ الطلب:</strong> {{ workshop['RequestDate'] }}</div>
+        <div><strong>تاريخ الإنجاز:</strong> {{ workshop['DoneDate'] or 'غير متوفر' }}</div>
+        <div><strong>التكلفة علينا:</strong> ${{ workshop['CostOnMe'] }}</div>
+        <div><strong>التكلفة على الزبون:</strong> ${{ workshop['CostOnCustomer'] }}</div>
+        <div><strong>الحالة:</strong>
+            <span class="inline-block px-2 py-1 rounded-md {% if workshop['Status'] == 'Done' %}bg-green-200 text-green-800{% elif workshop['Status'] == 'قيد التأكيد' %}bg-yellow-200 text-yellow-800{% elif workshop['Status'] == 'قيد العمل' %}bg-blue-200 text-blue-800{% else %}bg-red-200 text-red-800{% endif %}">
+                {{ workshop['Status'] }}
+            </span>
+        </div>
+        <div class="col-span-2"><strong>التفاصيل:</strong> {{ workshop['Details'] or 'غير متوفر' }}</div>
+        <div class="col-span-2"><strong>الملاحظات:</strong> {{ workshop['Notes'] or 'غير متوفر' }}</div>
+    </div>
+
+    <div class="mt-6">
+        <a href="{{ url_for('workshops') }}" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">العودة إلى ورش العمل</a>
+    </div>
+</div>
+{% endblock %}

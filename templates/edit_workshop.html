@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}تعديل ورشة{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md mt-8" style="font-family: 'Tajawal', sans-serif;">
+    <h2 class="text-3xl font-bold mb-6 text-blue-600">تعديل ورشة</h2>
+
+    <form method="POST" action="{{ url_for('edit_workshop', workshop_id=workshop['WorkshopID']) }}" class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">الموقع</label>
+                <input type="text" name="location" value="{{ workshop['Location'] }}" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm" required>
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">اسم الزبون</label>
+                <input type="text" name="customer_name" value="{{ workshop['CustomerName'] }}" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm" required>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">رقم الهاتف</label>
+                <input type="text" name="phone_number" value="{{ workshop['PhoneNumber'] }}" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm" required>
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">النوع</label>
+                <select name="type" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm">
+                    <option value="داخلي" {% if workshop['Type'] == 'داخلي' %}selected{% endif %}>داخلي</option>
+                    <option value="خارجي" {% if workshop['Type'] == 'خارجي' %}selected{% endif %}>خارجي</option>
+                    <option value="مانيفيل" {% if workshop['Type'] == 'مانيفيل' %}selected{% endif %}>مانيفيل</option>
+                    <option value="تنجيد" {% if workshop['Type'] == 'تنجيد' %}selected{% endif %}>تنجيد</option>
+                    <option value="صيانة" {% if workshop['Type'] == 'صيانة' %}selected{% endif %}>صيانة</option>
+                </select>
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-gray-700 font-medium text-sm">العامل</label>
+            <select name="worker_id" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm">
+                <option value="" disabled>اختر العامل</option>
+                {% for worker in workers %}
+                <option value="{{ worker['WorkerID'] }}" {% if worker['WorkerID'] == workshop['WorkerID'] %}selected{% endif %}>
+                    {{ worker['Name'] }} 
+                </option>
+                {% endfor %}    
+            </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">تاريخ الطلب</label>
+                <input type="date" name="request_date" value="{{ workshop['RequestDate'] }}" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">يشمل السكك</label>
+                <select name="includes_rails" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm">
+                    <option value="نعم" {% if workshop['IncludesRails'] == 'نعم' %}selected{% endif %}>نعم</option>
+                    <option value="لا" {% if workshop['IncludesRails'] == 'لا' %}selected{% endif %}>لا</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">التكلفة علينا</label>
+                <input type="number" step="0.01" name="cost_on_me" value="{{ workshop['CostOnMe'] }}" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">التكلفة على الزبون</label>
+                <input type="number" step="0.01" name="cost_on_customer" value="{{ workshop['CostOnCustomer'] }}" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm">
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-gray-700 font-medium text-sm">الحالة</label>
+            <select name="status" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm">
+                <option value="قيد العمل" {% if workshop['Status'] == 'قيد العمل' %}selected{% endif %}>قيد العمل</option>
+                <option value="قيد التحقق" {% if workshop['Status'] == 'قيد التحقق' %}selected{% endif %}>قيد التحقق</option>
+                <option value="تم الانتهاء" {% if workshop['Status'] == 'تم الانتهاء' %}selected{% endif %}>تم الانتهاء</option>
+                <option value="ملغاة" {% if workshop['Status'] == 'ملغاة' %}selected{% endif %}>ملغاة</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-gray-700 font-medium text-sm">التفاصيل</label>
+            <textarea name="details" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm" rows="3">{{ workshop['Details'] }}</textarea>
+        </div>
+
+        <button type="submit" class="bg-yellow-500 text-white px-6 py-2 rounded-lg hover:bg-yellow-600 text-sm">تعديل الورشة</button>
+    </form>
+</div>
+{% endblock %}

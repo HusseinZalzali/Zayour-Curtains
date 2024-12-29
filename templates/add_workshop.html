@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+
+{% block title %}إضافة ورشة{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md mt-8" style="font-family: 'Tajawal', sans-serif;">
+    <h2 class="text-3xl font-bold mb-6 text-blue-600">إضافة ورشة جديدة</h2>
+
+    <form method="POST" action="{{ url_for('add_workshop') }}" class="space-y-4" >
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">الموقع</label>
+                <input type="text" name="location" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm" required>
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">اسم الزبون</label>
+                <input type="text" name="customer_name" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm" required>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">رقم الهاتف</label>
+                <input type="text" name="phone_number" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm" required>
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">نوع الورشة</label>
+                <select name="workshop_types" id="type-select" multiple class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm">
+                    <option value="داخلي">داخلي</option>
+                    <option value="خارجي">خارجي</option>
+                    <option value="مانيفيل">مانيفيل</option>
+                    <option value="تنجيد">تنجيد</option>
+                    <option value="صيانة">صيانة</option>
+                </select>
+            </div>
+            
+            
+        </div>
+
+        <div>
+            <label class="block text-gray-700 font-medium text-sm">العاملين</label>
+            <select name="worker_ids" id="worker-select" multiple class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm">
+                {% for worker in workers %}
+                    <option value="{{ worker['WorkerID'] }}">{{ worker['Name'] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">تاريخ الطلب</label>
+                <input type="date" name="request_date" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">يشمل السكك</label>
+                <select name="includes_rails" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm">
+                    <option value="نعم">نعم</option>
+                    <option value="لا" selected>لا</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">التكلفة علينا</label>
+                <input type="number" step="0.01" name="cost_on_me" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">التكلفة على الزبون</label>
+                <input type="number" step="0.01" name="cost_on_customer" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm">
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-gray-700 font-medium text-sm">الحالة</label>
+            <select name="status" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm">
+                <option value="قيد العمل">قيد العمل</option>
+                <option value="قيد التحقق">قيد التحقق</option>
+                <option value="تم الانتهاء">تم الانتهاء</option>
+                <option value="ملغاة">ملغاة</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-gray-700 font-medium text-sm">التفاصيل</label>
+            <textarea name="details" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm" rows="3"></textarea>
+        </div>
+
+         <!-- Add Photos Section -->
+         <div>
+            <label class="block text-gray-700 font-medium text-sm mb-2">إضافة صور</label>
+            <div id="photo-upload-container" class="space-y-4">
+                <!-- Initial Photo Upload (Non-Removable) -->
+                <div class="flex items-center gap-4 p-4 border border-gray-300 rounded-lg shadow-sm bg-gray-50" data-photo-index="0">
+                    <div class="flex-shrink-0">
+                        <label class="block w-32 h-32 border border-dashed border-gray-300 bg-gray-100 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-200">
+                            <input type="file" name="photos" accept="image/*" class="hidden photo-input" onchange="previewPhoto(this)" required>
+                            <span class="text-gray-400 text-xs text-center">إضغط لإختيار صورة</span>
+                        </label>
+                    </div>
+                    <div class="flex-1">
+                        <input type="text" name="captions" placeholder="أدخل تعليقًا للصورة" class="w-full p-2 border border-gray-300 rounded-md text-sm">
+                    </div>
+                    <span class="text-gray-500 text-xs">(لا يمكن حذف الصورة الأولى)</span>
+                </div>
+            </div>
+            <button type="button" id="add-photo-button" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 text-sm flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H5a1 1 0 110-2h3V6a1 1 0 012-2z" clip-rule="evenodd" />
+                </svg>
+                <span>إضافة صورة أخرى</span>
+            </button>
+        </div>
+        <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 text-sm">إضافة الورشة</button>
+
+
+        <script>
+            // Dynamically add photo upload fields
+            const photoContainer = document.getElementById('photo-upload-container');
+            const addPhotoButton = document.getElementById('add-photo-button');
+            let photoIndex = 1;
+            $(document).ready(function() {
+                // Initialize Select2 on the workers field
+                $('#worker-select').select2({
+                    placeholder: "اختر العاملين",
+                    allowClear: true
+                });
+        
+                // Initialize Select2 on the workshop types field
+                $('#type-select').select2({
+                    placeholder: "اختر نوع الورشة",
+                    allowClear: true
+                });
+            });
+            addPhotoButton.addEventListener('click', function () {
+                const newPhotoInput = `
+                    <div class="flex items-center gap-4 p-4 border border-gray-300 rounded-lg shadow-sm bg-gray-50" data-photo-index="${photoIndex}">
+                        <div class="flex-shrink-0">
+                            <label class="block w-32 h-32 border border-dashed border-gray-300 bg-gray-100 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-200">
+                                <input type="file" name="photos" accept="image/*" class="hidden photo-input" onchange="previewPhoto(this)">
+                                <span class="text-gray-400 text-xs text-center">إضغط لإختيار صورة</span>
+                            </label>
+                        </div>
+                        <div class="flex-1">
+                            <input type="text" name="captions" placeholder="أدخل تعليقًا للصورة" class="w-full p-2 border border-gray-300 rounded-md text-sm">
+                        </div>
+                        <button type="button" class="text-red-500 hover:text-red-700" onclick="removePhoto(this)">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>`;
+                photoContainer.insertAdjacentHTML('beforeend', newPhotoInput);
+                photoIndex++;
+            });
+        
+            // Preview photo before uploading
+            function previewPhoto(input) {
+                if (input.files && input.files[0]) {
+                    const file = input.files[0];
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const previewContainer = input.closest('label');
+                        previewContainer.style.backgroundImage = `url(${e.target.result})`;
+                        previewContainer.style.backgroundSize = 'cover';
+                        previewContainer.style.backgroundPosition = 'center';
+                        previewContainer.innerHTML = '';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        
+            // Remove photo input field
+            function removePhoto(button) {
+                const photoContainer = button.closest('div[data-photo-index]');
+                if (photoContainer.getAttribute('data-photo-index') === '0') {
+                    alert('لا يمكن حذف الصورة الأولى');
+                } else {
+                    photoContainer.remove();
+                }
+            }
+        </script>
+
+{% endblock %}

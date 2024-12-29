@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}لوحة التحكم{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto p-6 mt-8" style="font-family: 'Tajawal', sans-serif;">
+    <h2 class="text-4xl font-extrabold mb-8 text-gray-800">لوحة التحكم</h2>
+
+    <!-- Current Month Header -->
+    <div class="mb-6">
+        <h3 class="text-2xl font-bold text-gray-700">إحصائيات الشهر {{ metrics['current_month_name'] }}</h3>
+    </div>
+
+    <!-- Statistics Grid (Current Month) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+
+        <!-- Monthly Income -->
+        <div class="bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg p-6 shadow-lg hover:shadow-xl transition">
+            <h3 class="text-xl font-bold">الإيرادات</h3>
+            <p class="text-4xl font-extrabold mt-4">${{ metrics['total_income_month'] }}</p>
+            <p class="mt-2 text-sm opacity-75">دخل محقق حتى الآن</p>
+        </div>
+
+        <!-- Monthly Outstanding Balance -->
+        <div class="bg-gradient-to-r from-red-500 to-red-700 text-white rounded-lg p-6 shadow-lg hover:shadow-xl transition">
+            <h3 class="text-xl font-bold">المبالغ المستحقة</h3>
+            <p class="text-4xl font-extrabold mt-4">${{ metrics['total_outstanding_month'] }}</p>
+            <p class="mt-2 text-sm opacity-75">رصيد غير مدفوع</p>
+        </div>
+
+        <!-- Workshops This Month -->
+        <div class="bg-gradient-to-r from-yellow-500 to-yellow-700 text-white rounded-lg p-6 shadow-lg hover:shadow-xl transition">
+            <h3 class="text-xl font-bold">إجمالي الورش</h3>
+            <p class="text-4xl font-extrabold mt-4">{{ metrics['total_workshops_month'] }}</p>
+            <p class="mt-2 text-sm opacity-75">عدد الورش النشطة</p>
+        </div>
+
+        <!-- Completed Workshops This Month -->
+        <div class="bg-gradient-to-r from-green-500 to-green-700 text-white rounded-lg p-6 shadow-lg hover:shadow-xl transition">
+            <h3 class="text-xl font-bold">الورش المكتملة</h3>
+            <p class="text-4xl font-extrabold mt-4">{{ metrics['completed_workshops_month'] }}</p>
+            <p class="mt-2 text-sm opacity-75">ورش منتهية بنجاح</p>
+        </div>
+    </div>
+
+    <!-- Divider -->
+    <hr class="my-10 border-gray-300">
+
+    <!-- Overall Statistics -->
+    <h3 class="text-2xl font-bold mb-6 text-gray-700">الإحصائيات الكلية</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Total Workshops -->
+        <div class="bg-white border-l-4 border-blue-600 rounded-lg p-6 shadow-md hover:shadow-lg transition">
+            <h3 class="text-lg font-bold text-blue-600">إجمالي الورش</h3>
+            <p class="text-3xl font-extrabold mt-4">{{ metrics['total_workshops'] }}</p>
+            <p class="mt-2 text-sm text-gray-500">كل الورش منذ البداية</p>
+        </div>
+
+        <!-- Pending Work -->
+        <div class="bg-white border-l-4 border-yellow-600 rounded-lg p-6 shadow-md hover:shadow-lg transition">
+            <h3 class="text-lg font-bold text-yellow-600">ورش قيد العمل</h3>
+            <p class="text-3xl font-extrabold mt-4">{{ metrics['pending_workshops'] }}</p>
+            <p class="mt-2 text-sm text-gray-500">مشروعات نشطة</p>
+        </div>
+
+        <!-- Pending Confirmation -->
+        <div class="bg-white border-l-4 border-red-600 rounded-lg p-6 shadow-md hover:shadow-lg transition">
+            <h3 class="text-lg font-bold text-red-600">ورش قيد التحقق</h3>
+            <p class="text-3xl font-extrabold mt-4">{{ metrics['confirmation_workshops'] }}</p>
+            <p class="mt-2 text-sm text-gray-500">في انتظار التحقق</p>
+        </div>
+
+        <!-- Total Outstanding Balance -->
+        <div class="bg-white border-l-4 border-red-600 rounded-lg p-6 shadow-md hover:shadow-lg transition col-span-1 lg:col-span-3">
+            <h3 class="text-lg font-bold text-red-600">إجمالي المبالغ المستحقة</h3>
+            <p class="text-3xl font-extrabold mt-4">${{ metrics['total_outstanding'] }}</p>
+            <p class="mt-2 text-sm text-gray-500">إجمالي الرصيد غير المدفوع</p>
+        </div>
+    </div>
+
+  
+  
+</div>
+{% endblock %}

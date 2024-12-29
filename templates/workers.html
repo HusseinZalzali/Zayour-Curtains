@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}العاملون{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md mt-8" style="font-family: 'Tajawal', sans-serif;">
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-3xl font-bold text-blue-600">العاملون</h2>
+        <a href="{{ url_for('add_worker') }}" class="bg-green-600 text-white px-4 py-2 rounded-md shadow-md hover:shadow-lg hover:bg-green-700 transition">
+            إضافة عامل جديد
+        </a>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="mb-4">
+        <input type="text" id="search" placeholder="البحث عن العاملين..." class="w-full max-w-md p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
+    </div>
+
+    <div class="overflow-x-auto mt-4">
+        <table class="w-full table-auto bg-white shadow-md rounded-lg">
+            <thead class="bg-blue-600 text-white">
+                <tr>
+                    <th class="px-4 py-3 text-center">الرقم</th>
+                    <th class="px-4 py-3 text-center">الاسم</th>
+                    <th class="px-4 py-3 text-center">رقم الهاتف</th>
+                    <th class="px-4 py-3 text-center">الدور</th>
+                    <th class="px-4 py-3 text-center">الراتب ($)</th>
+                    <th class="px-4 py-3 text-center">تاريخ بدء العمل</th>
+                    <th class="px-4 py-3 text-center">تاريخ الدفع القادم</th>
+                    <th class="px-4 py-3 text-center">الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody id="workerTable">
+                {% for worker in workers %}
+                <tr class="hover:bg-gray-100 transition-colors">
+                    <td class="px-4 py-3 text-center">{{ worker['WorkerID'] }}</td>
+                    <td class="px-4 py-3 text-center">{{ worker['Name'] }}</td>
+                    <td class="px-4 py-3 text-center">{{ worker['PhoneNumber'] or 'غير متوفر' }}</td>
+                    <td class="px-4 py-3 text-center">{{ worker['Role'] }}</td>
+                    <td class="px-4 py-3 text-center">
+                        ${{ worker['Salary']|int if worker['Salary'] == worker['Salary']|round else worker['Salary'] }}
+                    </td>
+                    <td class="px-4 py-3 text-center">{{ worker['StartDate'] }}</td>
+                    <td class="px-4 py-3 text-center">
+                        {% set next_payment = worker['StartDate']|date_add(months=1) %}
+                        {{ next_payment }}
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        <div class="inline-flex justify-center items-center gap-2">
+                            <a href="{{ url_for('edit_worker', worker_id=worker['WorkerID']) }}" 
+                               class="bg-yellow-500 text-white px-3 py-1 rounded-full shadow-md hover:shadow-lg hover:bg-yellow-600 transition">
+                                تعديل
+                            </a>
+                            <form method="POST" action="{{ url_for('delete_worker', worker_id=worker['WorkerID']) }}">
+                                <button type="submit" 
+                                        class="bg-red-500 text-white px-3 py-1 rounded-full shadow-md hover:shadow-lg hover:bg-red-600 transition">
+                                    حذف
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                    
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="text-center text-gray-500 py-4">لا يوجد عاملون مسجلون</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Search Script -->
+<script>
+    const searchInput = document.getElementById('search');
+    const workerRows = Array.from(document.querySelectorAll('#workerTable tr'));
+
+    searchInput.addEventListener('input', () => {
+        const query = searchInput.value.toLowerCase();
+        workerRows.forEach(row => {
+            row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
+        });
+    });
+</script>
+{% endblock %}

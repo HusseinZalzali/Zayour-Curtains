@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}إدارة الأموال{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md mt-8">
+    <h2 class="text-3xl font-bold text-blue-600">إدارة الأموال</h2>
+
+    <!-- Filters -->
+    <div class="flex justify-between items-center mt-4 mb-6">
+        <form method="GET" class="flex space-x-4 rtl:space-x-reverse">
+            <input type="date" name="filter_date" value="{{ filter_date or '' }}" class="p-2 border rounded-md focus:ring-2 focus:ring-blue-600">
+            <select name="transaction_type" class="p-2 border rounded-md focus:ring-2 focus:ring-blue-600">
+                <option value="">الكل</option>
+                <option value="Money In" {% if transaction_type == 'Money In' %}selected{% endif %}>إيراد</option>
+                <option value="Money Out" {% if transaction_type == 'Money Out' %}selected{% endif %}>مصروف</option>
+            </select>
+            <input type="text" name="search" placeholder="بحث..." value="{{ search_query or '' }}" class="p-2 border rounded-md focus:ring-2 focus:ring-blue-600">
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md">تصفية</button>
+        </form>
+        <a href="{{ url_for('add_transaction') }}" class="bg-green-600 text-white px-4 py-2 rounded-md">إضافة معاملة جديدة</a>
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="overflow-x-auto">
+        <table class="w-full table-auto bg-white shadow-md rounded-lg">
+            <thead class="bg-blue-600 text-white">
+                <tr>
+                    <th class="px-4 py-3 text-center">التاريخ</th>
+                    <th class="px-4 py-3 text-center">النوع</th>
+                    <th class="px-4 py-3 text-center">المبلغ ($)</th>
+                    <th class="px-4 py-3 text-center">الفئة</th>
+                    <th class="px-4 py-3 text-center">الملاحظات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                <tr class="hover:bg-gray-100">
+                    <td class="px-4 py-3 text-center">{{ transaction['Date'] }}</td>
+                    <td class="px-4 py-3 text-center">{{ transaction['TransactionType'] }}</td>
+                    <td class="px-4 py-3 text-center">{{ transaction['Amount']|int if transaction['Amount'] == transaction['Amount']|round else transaction['Amount'] }}</td>
+                    <td class="px-4 py-3 text-center">{{ transaction['Category'] }}</td>
+                    <td class="px-4 py-3 text-center">{{ transaction['Notes'] or 'لا توجد ملاحظات' }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center py-4 text-gray-500">لا توجد معاملات لعرضها</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot class="bg-gray-100">
+                <tr>
+                    <td colspan="2" class="px-4 py-3 text-center font-bold text-green-600">الإجمالي الداخل: ${{ total_in }}</td>
+                    <td colspan="2" class="px-4 py-3 text-center font-bold text-red-600">الإجمالي الخارج: ${{ total_out }}</td>
+                    <td class="px-4 py-3 text-center font-bold text-blue-600">الصافي: ${{ net_balance }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}إدارة الدفعات{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto bg-white p-8 rounded-lg shadow-lg mt-8" style="font-family: 'Tajawal', sans-serif;">
+    <h2 class="text-4xl font-extrabold mb-8 text-blue-600 text-center">إدارة الدفعات</h2>
+
+    <!-- Workshop Details -->
+    <div class="bg-gray-100 p-6 rounded-lg shadow-inner mb-8">
+        <h3 class="font-semibold text-xl text-gray-800 mb-4">تفاصيل الورشة</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="flex flex-col items-center">
+                <span class="text-gray-700 text-sm">التكلفة على الزبون</span>
+                <span class="text-2xl font-bold text-blue-600">${{ workshop['CostOnCustomer']|float|round == workshop['CostOnCustomer']|int and workshop['CostOnCustomer']|int or workshop['CostOnCustomer'] }}</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <span class="text-gray-700 text-sm">المدفوع حتى الآن</span>
+                <span class="text-2xl font-bold text-green-600">${{ workshop['TotalPayments']|float|round == workshop['TotalPayments']|int and workshop['TotalPayments']|int or workshop['TotalPayments'] }}</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <span class="text-gray-700 text-sm">المتبقي</span>
+                {% set outstanding_balance = workshop['CostOnCustomer'] - workshop['TotalPayments'] %}
+                {% if outstanding_balance > 0 %}
+                <span class="text-2xl font-bold text-red-600">${{ outstanding_balance|float|round == outstanding_balance|int and outstanding_balance|int or outstanding_balance }}</span>
+                {% else %}
+                <span class="text-2xl font-bold text-green-600">مدفوع بالكامل</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Payment Form -->
+    <form method="POST" id="payment-form" class="bg-gray-50 p-6 rounded-lg shadow-lg mb-8">
+        <h3 class="text-lg font-bold text-gray-800 mb-4">إضافة دفعة جديدة</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">تاريخ الدفعة</label>
+                <input type="date" name="payment_date" class="w-full p-3 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-600" required>
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">المبلغ</label>
+                <input type="number" step="0.01" name="amount" id="payment-amount" class="w-full p-3 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-600" required>
+                <p id="validation-message" class="text-red-600 text-sm mt-2 hidden">المبلغ يتجاوز المبلغ المطلوب.</p>
+            </div>
+            <div class="col-span-2">
+                <label class="block text-gray-700 font-medium mb-1">ملاحظات الدفع</label>
+                <textarea name="payment_notes" class="w-full p-3 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"></textarea>
+            </div>
+        </div>
+        <button type="submit" id="submit-button" class="w-full mt-6 bg-blue-600 text-white px-4 py-3 rounded-md hover:bg-blue-700 text-lg transition">إضافة الدفعة</button>
+    </form>
+
+    <!-- Registered Payments -->
+    <h3 class="font-bold text-lg text-gray-800 mb-4">الدفعات المسجلة</h3>
+    <div class="overflow-x-auto">
+        <table class="w-full table-auto bg-white shadow-md rounded-lg overflow-hidden">
+            <thead class="bg-blue-600 text-white">
+                <tr>
+                    <th class="px-6 py-4 text-center text-sm font-semibold">تاريخ الدفعة</th>
+                    <th class="px-6 py-4 text-center text-sm font-semibold">المبلغ</th>
+                    <th class="px-6 py-4 text-center text-sm font-semibold">ملاحظات الدفع</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payments %}
+                <tr class="hover:bg-gray-100 transition">
+                    <td class="px-6 py-4 text-center text-gray-800">{{ payment['PaymentDate'] }}</td>
+                    <td class="px-6 py-4 text-center text-gray-800">${{ payment['Amount']|float|round == payment['Amount']|int and payment['Amount']|int or payment['Amount'] }}</td>
+                    <td class="px-6 py-4 text-center text-gray-800">{{ payment['Notes'] or 'لا توجد ملاحظات' }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" class="text-center text-gray-500 py-4">لا توجد دفعات مسجلة</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Validation Script -->
+<script>
+    const totalPayments = {{ workshop['TotalPayments'] }};
+    const costOnCustomer = {{ workshop['CostOnCustomer'] }};
+    const outstandingBalance = costOnCustomer - totalPayments;
+
+    const paymentInput = document.getElementById('payment-amount');
+    const validationMessage = document.getElementById('validation-message');
+    const submitButton = document.getElementById('submit-button');
+
+    paymentInput.addEventListener('input', () => {
+        const paymentValue = parseFloat(paymentInput.value || 0);
+        if (paymentValue > outstandingBalance) {
+            validationMessage.classList.remove('hidden');
+            submitButton.disabled = true;
+        } else {
+            validationMessage.classList.add('hidden');
+            submitButton.disabled = false;
+        }
+    });
+</script>
+{% endblock %}

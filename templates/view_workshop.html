@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}تفاصيل الورشة{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md mt-8" style="font-family: 'Tajawal', sans-serif;">
+    <h2 class="text-3xl font-bold mb-6 text-blue-600">تفاصيل الورشة</h2>
+
+    <form class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">الموقع</label>
+                <input type="text" value="{{ workshop['Location'] }}" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm bg-gray-100" disabled>
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">اسم الزبون</label>
+                <input type="text" value="{{ workshop['CustomerName'] }}" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm bg-gray-100" disabled>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">رقم الهاتف</label>
+                <input type="text" value="{{ workshop['PhoneNumber'] }}" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm bg-gray-100" disabled>
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">نوع الورشة</label>
+                <textarea class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm bg-gray-100" rows="2" disabled>
+                    {{ ", ".join(workshop_types) }}
+                </textarea>
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-gray-700 font-medium text-sm">العاملون</label>
+            <textarea class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm bg-gray-100" rows="2" disabled>
+                {{ ", ".join(worker_names) }}
+            </textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">تاريخ الطلب</label>
+                <input type="date" value="{{ workshop['RequestDate'] }}" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm bg-gray-100" disabled>
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">يشمل السكك</label>
+                <input type="text" value="{{ 'نعم' if workshop['IncludesRails'] == 'نعم' else 'لا' }}" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm bg-gray-100" disabled>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">التكلفة علينا</label>
+                <input type="text" value="${{ workshop['CostOnMe']|int if workshop['CostOnMe'] == workshop['CostOnMe']|round else workshop['CostOnMe'] }}" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm bg-gray-100" disabled>
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium text-sm">التكلفة على الزبون</label>
+                <input type="text" value="${{ workshop['CostOnCustomer']|int if workshop['CostOnCustomer'] == workshop['CostOnCustomer']|round else workshop['CostOnCustomer'] }}" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm bg-gray-100" disabled>
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-gray-700 font-medium text-sm">الحالة</label>
+            <input type="text" value="{{ workshop['Status'] }}" class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm bg-gray-100" disabled>
+        </div>
+
+        <div>
+            <label class="block text-gray-700 font-medium text-sm">التفاصيل</label>
+            <textarea class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm bg-gray-100" rows="3" disabled>{{ workshop['Details'] }}</textarea>
+        </div>
+
+                {% if photos %}
+        <div class="mt-6">
+            <label class="block text-gray-700 font-medium text-sm mb-2">الصور</label>
+            <div id="workshopPhotosCarousel" class="carousel slide rounded-lg shadow-md" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% for photo in photos %}
+                    <div class="carousel-item {% if loop.first %}active{% endif %}">
+                        <img 
+                            src="{{ url_for('static', filename=photo['PhotoPath']) }}" 
+                            class="d-block w-100 rounded-lg object-cover" 
+                            alt="ورشة صورة" 
+                            style="width: 600px; height: 400px; object-fit: cover;">
+                        <div class="carousel-caption d-none d-md-block bg-opacity-75 bg-dark p-2 rounded">
+                            <p class="text-white">{{ photo['Caption'] }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#workshopPhotosCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">السابق</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#workshopPhotosCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">التالي</span>
+                </button>
+            </div>
+        </div>
+        {% else %}
+        <div class="mt-6">
+            <p class="text-gray-500 text-sm">لا توجد صور لهذه الورشة.</p>
+        </div>
+        {% endif %}
+
+
+        <div class="flex justify-end">
+            <a href="{{ url_for('workshops') }}" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 text-sm">رجوع إلى الورش</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
